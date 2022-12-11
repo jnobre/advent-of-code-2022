@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strconv"
 )
 
 func Check(err error) {
@@ -40,4 +41,19 @@ func Sum(a []int) int {
 		sum += e
 	}
 	return sum
+}
+
+func ToInts(a []string) []int {
+	return Map(a, func(x string) int {
+		n, _ := strconv.Atoi(x)
+		return n
+	})
+}
+
+func Map[T any, S any](a []T, f func(x T) S) []S {
+	r := make([]S, 0)
+	for _, e := range a {
+		r = append(r, f(e))
+	}
+	return r
 }
