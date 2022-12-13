@@ -57,3 +57,17 @@ func Map[T any, S any](a []T, f func(x T) S) []S {
 	}
 	return r
 }
+
+func Set[T comparable](a []T) []T {
+	hash := make(map[T]uint8)
+	for _, elem := range a {
+		hash[elem] = 1
+	}
+	set := make([]T, len(hash))
+	i := 0
+	for k := range hash {
+		set[i] = k
+		i += 1
+	}
+	return set
+}
