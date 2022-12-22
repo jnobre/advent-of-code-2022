@@ -122,7 +122,7 @@ func pt1() {
 			inspected:   0,
 		})
 	}
-	// fmt.Println(monkes)
+
 	for i := 0; i < 20; i += 1 {
 		for j := 0; j < len(monkes); j += 1 {
 			for {
