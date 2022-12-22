@@ -1,123 +1,71 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"strings"
-
-	AOCUTILS "github.com/jnobre/advent-of-code-2022"
+	"os"
 )
 
+type pos struct{ x, y int }
+
+func abs(a int) int {
+	if a < 0 {
+		return -a
+	}
+	return a
+}
+
+func direction(from, to int) int {
+	if to == from {
+		return 0
+	} else if to > from {
+		return 1
+	}
+	return -1
+}
+
+type rope struct {
+	knots   []pos
+	visited map[pos]bool
+}
+
+func (r rope) move(dir string) {
+	switch dir {
+	case "R":
+		r.knots[0].x += 1
+	case "L":
+		r.knots[0].x -= 1
+	case "D":
+		r.knots[0].y += 1
+	case "U":
+		r.knots[0].y -= 1
+	}
+	for i := 1; i < len(r.knots); i++ {
+		if abs(r.knots[i-1].x-r.knots[i].x) > 1 || abs(r.knots[i-1].y-r.knots[i].y) > 1 {
+			r.knots[i] = pos{
+				r.knots[i].x + direction(r.knots[i].x, r.knots[i-1].x),
+				r.knots[i].y + direction(r.knots[i].y, r.knots[i-1].y),
+			}
+		}
+	}
+	r.visited[r.knots[len(r.knots)-1]] = true
+}
+
 func main() {
-	problem1()
-	problem2()
-}
-
-func problem1() {
-	lines := AOCUTILS.ReadLines("input.txt")
-	grid := make([][]int, 512)
-	for i := range grid {
-		grid[i] = make([]int, 512)
-	}
-	taily, tailx, heady, headx := 300, 256, 300, 256 // :)
-	grid[taily][tailx] = 1
-	for _, line := range lines {
-		parts := strings.Split(line, " ")
-		amt := AOCUTILS.ToIntMust(parts[1])
-		for i := 0; i < amt; i += 1 {
-			switch parts[0] {
-			case "R":
-				headx++
-			case "L":
-				headx--
-			case "U":
-				heady--
-			case "D":
-				heady++
-			}
-			if !isTouching(headx, heady, tailx, taily) {
-				if heady > taily {
-					taily++
-				}
-				if heady < taily {
-					taily--
-				}
-				if headx > tailx {
-					tailx++
-				}
-				if headx < tailx {
-					tailx--
-				}
-			}
-			grid[taily][tailx] = 1
+	scanner := bufio.NewScanner(os.Stdin)
+	rope1 := rope{[]pos{{0, 0}, {0, 0}}, map[pos]bool{}}
+	rope2 := rope{[]pos{{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}}, map[pos]bool{}}
+	for scanner.Scan() {
+		if scanner.Text() == "" {
+			break
+		}
+		var dir string
+		var n int
+		fmt.Sscanf(scanner.Text(), "%s %d", &dir, &n)
+		for i := 0; i < n; i++ {
+			rope1.move(dir)
+			rope2.move(dir)
 		}
 	}
-	fmt.Println(countVisited(grid))
-}
-
-func problem2() {
-	lines := AOCUTILS.ReadLines("input.txt")
-	grid := make([][]int, 512)
-	for i := range grid {
-		grid[i] = make([]int, 512)
-	}
-	rope := make([][2]int, 10)
-	for i := range rope {
-		rope[i] = [2]int{300, 256}
-	}
-	grid[rope[0][0]][rope[0][1]] = 1
-	for _, line := range lines {
-		parts := strings.Split(line, " ")
-		amt := AOCUTILS.ToIntMust(parts[1])
-		for i := 0; i < amt; i += 1 {
-			switch parts[0] {
-			case "R":
-				rope[9][1]++
-			case "L":
-				rope[9][1]--
-			case "U":
-				rope[9][0]--
-			case "D":
-				rope[9][0]++
-			}
-			for i := 0; i < 9; i += 1 {
-				if !isTouching(rope[i+1][1], rope[i+1][0], rope[i][1], rope[i][0]) {
-					if rope[i+1][0] > rope[i][0] {
-						rope[i][0]++
-					}
-					if rope[i+1][0] < rope[i][0] {
-						rope[i][0]--
-					}
-					if rope[i+1][1] > rope[i][1] {
-						rope[i][1]++
-					}
-					if rope[i+1][1] < rope[i][1] {
-						rope[i][1]--
-					}
-				}
-			}
-			grid[rope[0][0]][rope[0][1]] = 1
-		}
-	}
-	fmt.Println(countVisited(grid))
-}
-
-func countVisited(grid [][]int) int {
-	visited := 0
-	for _, row := range grid {
-		for _, elem := range row {
-			if elem == 1 {
-				visited += 1
-			}
-		}
-	}
-	return visited
-}
-
-func isTouching(headx, heady, tailx, taily int) bool {
-	xdist := AOCUTILS.Abs(headx - tailx)
-	if xdist > 1 {
-		return false
-	}
-	ydist := AOCUTILS.Abs(heady - taily)
-	return ydist <= 1
+	fmt.Println(len(rope1.visited), len(rope2.visited))
 }

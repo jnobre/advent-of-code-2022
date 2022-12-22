@@ -2,10 +2,12 @@ package AOCUTILS
 
 import (
 	"bufio"
+	"errors"
 	"log"
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 func Check(err error) {
@@ -27,6 +29,17 @@ func ReadLines(filename string) []string {
 	}
 	Check(scanner.Err())
 	return lines
+}
+
+func ReadString(filename string) string {
+	lines := ReadLines(filename)
+	return strings.Join(lines, "\n")
+}
+
+func SplitAndTrim(s string) []string {
+	return Map(strings.Split(s, "\n"), func(x string) string {
+		return strings.TrimSpace(x)
+	})
 }
 
 func SortDescending(a []int) []int {
@@ -93,6 +106,16 @@ func Max[T int | int8 | int16 | int32 | int64 | float32 | float64](xs []T) T {
 	return max
 }
 
+func Min[T int | int8 | int16 | int32 | int64 | float32 | float64](xs []T) T {
+	min := xs[0]
+	for _, s := range xs {
+		if s <= min {
+			min = s
+		}
+	}
+	return min
+}
+
 func StrToDigits(a string) []int {
 	l := len(a)
 	res := make([]int, l)
@@ -107,4 +130,28 @@ func Abs(x int) int {
 		return (-x)
 	}
 	return x
+}
+
+func PushBack[T any](xs []T, s T) []T {
+	return append(xs, s)
+}
+
+func PushFront[T any](xs []T, s T) []T {
+	return append([]T{s}, xs...)
+}
+
+func PopBack[T any](xs []T) ([]T, T, error) {
+	if len(xs) == 0 {
+		var zero T
+		return nil, zero, errors.New("array is empty")
+	}
+	return xs[:len(xs)-1], xs[len(xs)-1], nil
+}
+
+func PopFront[T any](xs []T) ([]T, T, error) {
+	if len(xs) == 0 {
+		var zero T
+		return nil, zero, errors.New("array is empty")
+	}
+	return xs[1:], xs[0], nil
 }
