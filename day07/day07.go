@@ -112,3 +112,14 @@ func calculateSizes(f *File) int {
 	}
 	return f.Size
 }
+
+func getSizes(f *File) []int {
+	sizes := make([]int, 0)
+	if f.Type == DIR {
+		sizes = append(sizes, f.Size)
+	}
+	for _, ch := range f.Children {
+		sizes = append(sizes, getSizes(ch)...)
+	}
+	return sizes
+}
