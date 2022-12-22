@@ -82,3 +82,22 @@ func ToIntMust(a string) int {
 	n, _ := strconv.Atoi(a)
 	return n
 }
+
+func Max[T int | int8 | int16 | int32 | int64 | float32 | float64](xs []T) T {
+	max := xs[0]
+	for _, s := range xs {
+		if s >= max {
+			max = s
+		}
+	}
+	return max
+}
+
+func StrToDigits(a string) []int {
+	l := len(a)
+	res := make([]int, l)
+	for i := range a {
+		res[i] = ToIntMust(string(a[i]))
+	}
+	return res
+}
