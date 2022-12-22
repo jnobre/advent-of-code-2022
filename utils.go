@@ -101,3 +101,10 @@ func StrToDigits(a string) []int {
 	}
 	return res
 }
+
+func Abs(x int) int {
+	if x < 0 {
+		return (-x)
+	}
+	return x
+}
