@@ -35,6 +35,12 @@ func SortDescending(a []int) []int {
 	return b
 }
 
+func SortAscending(a []int) []int {
+	b := a[:]
+	sort.Slice(b, func(i, j int) bool { return b[i] < b[j] })
+	return b
+}
+
 func Sum(a []int) int {
 	sum := 0
 	for _, e := range a {
@@ -70,4 +76,9 @@ func Set[T comparable](a []T) []T {
 		i += 1
 	}
 	return set
+}
+
+func ToIntMust(a string) int {
+	n, _ := strconv.Atoi(a)
+	return n
 }
